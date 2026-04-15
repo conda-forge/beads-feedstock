@@ -1,5 +1,5 @@
 context:
-  version: "1.0.0"
+  version: "1.0.1"
 
 package:
   name: beads
@@ -7,7 +7,7 @@ package:
 
 source:
   - url: https://github.com/steveyegge/beads/archive/refs/tags/v${{ version }}.tar.gz
-    sha256: db089aa41a3aa1f68f57ad72b632e2796dd5a045406366a68e001450889f0370
+    sha256: 0b3760a74c27ddc70c455a5249ec9db58ece17870c340cfe982852cba90da8d4
     target_directory: src
   # Windows-only dep `go-localereader` (MIT-licensed) misses standard license file layout,
   # so we have to manually add the license file
@@ -16,7 +16,7 @@ source:
     target_directory: library_licenses_2/github.com/go-localereader
 
 build:
-  number: 2
+  number: 0
   script:
     - cd src
     - if: unix
