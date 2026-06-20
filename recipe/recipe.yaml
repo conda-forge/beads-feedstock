@@ -58,9 +58,16 @@ build:
 
 requirements:
   build:
-    - ${{ stdlib('c') }}
-    - ${{ compiler('c') }}
-    - ${{ compiler('go-cgo') }}
+    # Build fails on both Windows and macOS with default build providers (Azure). On macOS, CGO-enabled code links the Security/CoreFoundation symbol
+    # `_SecTrustCopyCertificateChain` which apparently isn't available. The error on Windows is unclear (truncated from logs). Disabling CGO implies not
+    # embedding the default Dolt backend, which means the resulting Windows and macOS binaries require a running `dolt sql-server`.
+    - if: linux
+      then:
+        - ${{ stdlib('c') }}
+        - ${{ compiler('c') }}
+        - ${{ compiler('go-cgo') }}
+      else:
+        - ${{ compiler('go-nocgo') }}
     - go-licenses
 
 tests:
