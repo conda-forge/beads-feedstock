@@ -45,7 +45,7 @@ build:
         - for /f "usebackq delims=" %%T in (`powershell -Command "((Invoke-RestMethod 'https://api.github.com/repos/gastownhall/beads').default_branch)"`) do set DEFAULT_BRANCH=%%T
         - for /f "usebackq delims=" %%T in (`powershell -Command "((Invoke-RestMethod 'https://api.github.com/repos/gastownhall/beads/commits/v${{ version }}').sha)"`) do set COMMIT_HASH=%%T
         - set "SHORT_COMMIT_HASH=%COMMIT_HASH:~0,7%"
-        - go build -o="%LIBRARY_BIN%"\bd.exe -v -buildmode=exe -ldflags="-s -w -X main.Branch=%DEFAULT_BRANCH% -X main.Build=%SHORT_COMMIT_HASH% -X main.Commit=%COMMIT_HASH% -X main.version=${{ version }}" -tags=gms_pure_go -trimpath ./cmd/bd
+        - go build -o="%LIBRARY_BIN%"\bd.exe -v -ldflags="-s -w -X main.Branch=%DEFAULT_BRANCH% -X main.Build=%SHORT_COMMIT_HASH% -X main.Commit=%COMMIT_HASH% -X main.version=${{ version }}" -tags=gms_pure_go -trimpath ./cmd/bd
         # generate shell completions
         - mkdir "%LIBRARY_PREFIX%"\share\bash-completion\completions
         - mkdir "%LIBRARY_PREFIX%"\share\fish\vendor_completions.d
