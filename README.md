@@ -3,15 +3,15 @@ About beads-feedstock
 
 Feedstock license: [BSD-3-Clause](https://github.com/conda-forge/beads-feedstock/blob/main/LICENSE.txt)
 
-Home: https://github.com/steveyegge/beads
+Home: https://github.com/gastownhall/beads
 
 Package license: MIT
 
 Summary: A developer-centric issue tracker that lives in your Git repo
 
-Development: https://github.com/steveyegge/beads
+Development: https://github.com/gastownhall/beads
 
-Documentation: https://github.com/steveyegge/beads/tree/main/docs
+Documentation: https://github.com/gastownhall/beads/tree/main/docs
 
 Beads (bd) is a fast, local-first CLI issue tracker designed for software
 teams and AI agents. It stores issues alongside your code in a Dolt
