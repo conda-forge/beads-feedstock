@@ -15,7 +15,7 @@ source:
     target_directory: library_licenses_2/github.com/go-localereader
 
 build:
-  number: 0
+  number: 1
   script:
     # upstream refs: https://github.com/gastownhall/beads/blob/main/docs/INSTALLING.md & https://github.com/gastownhall/beads/blob/main/.goreleaser.yml
     - if: unix
