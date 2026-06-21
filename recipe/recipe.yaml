@@ -54,7 +54,7 @@ build:
         - '"%LIBRARY_BIN%"\bd.exe completion fish > "%LIBRARY_PREFIX%"\share\fish\vendor_completions.d\bd.fish'
         - '"%LIBRARY_BIN%"\bd.exe completion zsh  > "%LIBRARY_PREFIX%"\share\zsh\site-functions\_bd'
         # merge library license files
-        - robocopy library_licenses_2 library_licenses /E /MOVE
+        - xcopy "library_licenses_2\*" "library_licenses\" /E /I /Y & if errorlevel 1 exit /b %ERRORLEVEL% & rmdir /S /Q "library_licenses_2"
 
 requirements:
   build:
