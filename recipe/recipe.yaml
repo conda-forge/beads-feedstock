@@ -73,16 +73,11 @@ requirements:
 
 tests:
   - script:
+      # required to avoid preventing test cleanup by orphaned dolt server process
       - if: win
-        then: |
-          # required to avoid preventing test cleanup by orphaned dolt server process
-          set BEADS_DOLT_AUTO_START=0
-          bd --help
-          bd --version
-      - if: unix
-        then: |
-          bd --help
-          bd --version
+        then: set BEADS_DOLT_AUTO_START=0
+      - bd --help
+      - bd --version
   - package_contents:
       bin:
         - bd
