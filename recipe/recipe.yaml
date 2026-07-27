@@ -79,6 +79,7 @@ tests:
   - script:
       env:
         BEADS_DOLT_AUTO_START: "0"
+        BD_NO_DAEMON: "1"
       content:
         - bd --help
         - bd --version
