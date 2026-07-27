@@ -79,6 +79,8 @@ tests:
   - script:
       env:
         BEADS_DOLT_AUTO_START: "0"
+        BD_DISABLE_EVENT_FLUSH: "1"
+        BD_DISABLE_METRICS: "1"
         BD_NO_DAEMON: "1"
       content:
         - bd --help
