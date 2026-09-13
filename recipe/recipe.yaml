@@ -26,44 +26,44 @@ source:
 build:
   number: 0
   script:
-    # upstream refs: https://github.com/gastownhall/beads/blob/main/docs/INSTALLING.md & https://github.com/gastownhall/beads/blob/main/.goreleaser.yml
-    - go-licenses save ./cmd/bd --save_path=library_licenses --ignore=github.com/apache/arrow/go/arrow --ignore=github.com/apache/thrift/lib/go/thrift --ignore=github.com/dolthub/eventkit --ignore=github.com/dolthub/eventkit/transport/ga4 --ignore=github.com/kch42/buzhash --ignore=github.com/mattn/go-localereader
-    - if: unix
-      then:
-        - DEFAULT_BRANCH="$(curl -s "https://api.github.com/repos/gastownhall/beads" | jq -r '.default_branch')"
-        - COMMIT_HASH="$(curl -s "https://api.github.com/repos/gastownhall/beads/commits/v${{ version }}" | jq -r '.sha')"
-        - SHORT_COMMIT_HASH="$(echo "${COMMIT_HASH}" | cut -c 1-7)"
-        - go build -o="$PREFIX"/bin/bd -v -ldflags="-s -w -X main.Branch=${DEFAULT_BRANCH} -X main.Build=${SHORT_COMMIT_HASH} -X main.Commit=${COMMIT_HASH} -X main.Version=${{ version }}" -tags=gms_pure_go -trimpath ./cmd/bd
-        # generate shell completions
-        - if: build_platform == host_platform
-          then:
-            - mkdir -p "$PREFIX"/share/bash-completion/completions "$PREFIX"/share/fish/vendor_completions.d "$PREFIX"/share/zsh/site-functions
-            - '"$PREFIX"/bin/bd completion bash > "$PREFIX"/share/bash-completion/completions/bd'
-            - '"$PREFIX"/bin/bd completion fish > "$PREFIX"/share/fish/vendor_completions.d/bd.fish'
-            - '"$PREFIX"/bin/bd completion zsh  > "$PREFIX"/share/zsh/site-functions/_bd'
-        # merge library license files
-        - cp -a library_licenses_2/. library_licenses/ && rm -rf library_licenses_2
-    - if: win
-      then:
-        - for /f "usebackq delims=" %%T in (`powershell -Command "((Invoke-RestMethod 'https://api.github.com/repos/gastownhall/beads').default_branch)"`) do set DEFAULT_BRANCH=%%T
-        - for /f "usebackq delims=" %%T in (`powershell -Command "((Invoke-RestMethod 'https://api.github.com/repos/gastownhall/beads/commits/v${{ version }}').sha)"`) do set COMMIT_HASH=%%T
-        - set "SHORT_COMMIT_HASH=%COMMIT_HASH:~0,7%"
-        - go build -o="%LIBRARY_BIN%"\bd.exe -v -ldflags="-s -w -X main.Branch=%DEFAULT_BRANCH% -X main.Build=%SHORT_COMMIT_HASH% -X main.Commit=%COMMIT_HASH% -X main.version=${{ version }}" -tags=gms_pure_go -trimpath ./cmd/bd
-        # generate shell completions
-        - if: build_platform == host_platform
-          then:
-            - mkdir "%LIBRARY_PREFIX%"\share\bash-completion\completions
-            - mkdir "%LIBRARY_PREFIX%"\share\fish\vendor_completions.d
-            - mkdir "%LIBRARY_PREFIX%"\share\zsh\site-functions
-            - '"%LIBRARY_BIN%"\bd.exe completion bash > "%LIBRARY_PREFIX%"\share\bash-completion\completions\bd'
-            - '"%LIBRARY_BIN%"\bd.exe completion fish > "%LIBRARY_PREFIX%"\share\fish\vendor_completions.d\bd.fish'
-            - '"%LIBRARY_BIN%"\bd.exe completion zsh  > "%LIBRARY_PREFIX%"\share\zsh\site-functions\_bd'
-        # merge library license files
-        - xcopy "library_licenses_2\*" "library_licenses\" /E /I /Y & if errorlevel 1 exit /b %ERRORLEVEL% & rmdir /S /Q "library_licenses_2"
+    interpreter: nu
+    content:
+      - let prefix = $env.LIBRARY_PREFIX? | default $env.PREFIX
+      # build main app and generate license data
+      # upstream refs: https://github.com/gastownhall/beads/blob/main/docs/INSTALLING.md & https://github.com/gastownhall/beads/blob/main/.goreleaser.yml
+      - let default_branch = (http get https://api.github.com/repos/gastownhall/beads).default_branch
+      - let commit_hash = (http get https://api.github.com/repos/gastownhall/beads/commits/v${{ version }}).sha
+      - let short_commit_hash = ($commit_hash | str substring 0..6)
+      - go build
+        -o=($prefix)/bin/
+        -v
+        -ldflags=$'-s -w -X main.Branch=($default_branch) -X main.Build=($short_commit_hash) -X main.Commit=($commit_hash) -X main.Version=${{ version }}'
+        -tags=gms_pure_go
+        -trimpath
+        ./cmd/bd
+      - go-licenses save ./cmd/bd
+        --save_path=library_licenses
+        --ignore=github.com/apache/arrow/go/arrow
+        --ignore=github.com/apache/thrift/lib/go/thrift
+        --ignore=github.com/dolthub/eventkit
+        --ignore=github.com/dolthub/eventkit/transport/ga4
+        --ignore=github.com/kch42/buzhash
+        --ignore=github.com/mattn/go-localereader
+      # merge library license files
+      - cp --recursive library_licenses_2/* library_licenses/
+      - rm --recursive library_licenses_2
+      # generate shell completions
+      - if: build_platform == host_platform
+        then:
+          - mkdir ($prefix)/share/bash-completion/completions ($prefix)/share/fish/vendor_completions.d ($prefix)/share/zsh/site-functions
+          - let bin = ($prefix)/bin/bd
+          - ^$bin completion bash | save ($prefix)/share/bash-completion/completions/bd
+          - ^$bin completion fish | save ($prefix)/share/fish/vendor_completions.d/bd.fish
+          - ^$bin completion zsh  | save ($prefix)/share/zsh/site-functions/_bd
 
 requirements:
   build:
-    # Build fails on both Windows and macOS with default build providers (Azure). On macOS, CGO-enabled code links the Security/CoreFoundation symbol
+    # Build fails on both Windows and macOS with CGO enabled. On macOS, CGO-enabled code links the Security/CoreFoundation symbol
     # `_SecTrustCopyCertificateChain` which apparently isn't available. The error on Windows is unclear (truncated from logs). Disabling CGO implies not
     # embedding the default Dolt backend, which means the resulting Windows and macOS binaries require a running `dolt sql-server`.
     - if: linux
@@ -74,6 +74,7 @@ requirements:
       else:
         - ${{ compiler('go-nocgo') }}
     - go-licenses
+    - nushell
 
 tests:
   - script:
