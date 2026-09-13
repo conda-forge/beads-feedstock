@@ -14,7 +14,7 @@ source:
     sha256: ff2fe52b8dfd2574c6ea7f0c407948c857f62672c2a3a9a17083ee10af8067ef
     target_directory: library_licenses_2/github.com/apache/arrow-go
   - url: https://raw.githubusercontent.com/apache/thrift/master/LICENSE
-    sha256: 89aa7b27868669299bd8a6c53b72ec4beadce42dad6c8336797cc26e1e8df98d
+    sha256: c866aafb79e8d5885eabb9d44a0105c8fcca35d26c5088025b131a908458a8af
     target_directory: library_licenses_2/github.com/apache/thrift
   - url: https://raw.githubusercontent.com/kch42/buzhash/master/LICENSE
     sha256: e36eb71189a6d30b09337cbf5fb5155f7286bc0e728d5fbad163723abc6b170c
