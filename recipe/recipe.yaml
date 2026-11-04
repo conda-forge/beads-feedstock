@@ -1,5 +1,5 @@
 context:
-  version: "1.3.3"
+  version: "1.3.4"
 
 package:
   name: beads
@@ -7,7 +7,7 @@ package:
 
 source:
   - url: https://github.com/gastownhall/beads/archive/refs/tags/v${{ version }}.tar.gz
-    sha256: ff97bd5320cb09613cccd77532eeaec29bdb0dc26af7bbbf2275913e97dbaada
+    sha256: 450284d684e9b114a59ea60afb578dbdca40b2e5307d2c349a9ec37760409c46
   # the following dependencies miss standard license file layout, so we have to manually add their license files
   # (`github.com/dolthub/eventkit` has no license)
   - url: https://raw.githubusercontent.com/apache/arrow-go/main/LICENSE.txt
