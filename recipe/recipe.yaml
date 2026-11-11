@@ -34,19 +34,17 @@ build:
       - let default_branch = (http get https://api.github.com/repos/gastownhall/beads).default_branch
       - let commit_hash = (http get https://api.github.com/repos/gastownhall/beads/commits/v${{ version }}).sha
       - let short_commit_hash = ($commit_hash | str substring 0..6)
-      - go build -o=($prefix)/bin/ -v -ldflags=$'-s -w -X main.Branch=($default_branch) -X main.Build=($short_commit_hash) -X main.Commit=($commit_hash) -X main.Version=${{ version }}' -tags=gms_pure_go -trimpath ./cmd/bd
-      - go-licenses save ./cmd/bd --save_path=library_licenses --ignore=github.com/apache/arrow/go/arrow --ignore=github.com/apache/thrift/lib/go/thrift --ignore=github.com/dolthub/eventkit --ignore=github.com/dolthub/eventkit/transport/ga4 --ignore=github.com/kch42/buzhash --ignore=github.com/mattn/go-localereader
+      - ^go build -o=($prefix)/bin/ -v -ldflags=$'-s -w -X main.Branch=($default_branch) -X main.Build=($short_commit_hash) -X main.Commit=($commit_hash) -X main.Version=${{ version }}' -tags=gms_pure_go ./cmd/bd
+      - ^go-licenses save ./cmd/bd --save_path=library_licenses --ignore=github.com/apache/arrow/go/arrow --ignore=github.com/apache/thrift/lib/go/thrift --ignore=github.com/dolthub/eventkit --ignore=github.com/dolthub/eventkit/transport/ga4 --ignore=github.com/kch42/buzhash --ignore=github.com/mattn/go-localereader
       # merge library license files
       - cp --recursive library_licenses_2/* library_licenses/
       - rm --recursive library_licenses_2
       # generate shell completions
       - if: build_platform == host_platform
         then:
-          - mkdir ($prefix)/share/bash-completion/completions ($prefix)/share/fish/vendor_completions.d ($prefix)/share/zsh/site-functions
-          - let bin = ($prefix)/bin/bd
-          - ^$bin completion bash | save ($prefix)/share/bash-completion/completions/bd
-          - ^$bin completion fish | save ($prefix)/share/fish/vendor_completions.d/bd.fish
-          - ^$bin completion zsh  | save ($prefix)/share/zsh/site-functions/_bd
+          - ^bd completion bash | save --force ($prefix)/share/bash-completion/completions/bd
+          - ^bd completion fish | save --force ($prefix)/share/fish/vendor_completions.d/bd.fish
+          - ^bd completion zsh  | save --force ($prefix)/share/zsh/site-functions/_bd
 
 requirements:
   build:
